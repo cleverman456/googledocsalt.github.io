@@ -11,148 +11,124 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { height: 100%; background: #0f1115; }
-    body { min-height: 100vh; height: 100%; font-family: "Inter", sans-serif; background: transparent; color: #ffffff; overflow-x: hidden; }
-    #stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; display: block; }
-    .site { position: relative; z-index: 2; min-height: 100vh; }
+    body { min-height: 100vh; font-family: "Inter", sans-serif; color: #fff; overflow-x: hidden; }
     header { padding: 32px 20px 20px; text-align: center; }
     header h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; }
     header p { margin-top: 8px; color: #9aa0aa; font-size: 0.95rem; }
-    .games-wrapper { max-width: 1300px; margin: 0 auto; padding: 20px; }
+    .like-wrapper { margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .like-wrapper button { font-size: 1.2rem; padding: 6px 12px; border-radius: 8px; border: none; background: #037aff; color: #fff; cursor: pointer; transition: 0.2s; }
+    .like-wrapper button:hover { background: #025dcc; }
+    .games-wrapper { max-width: 1300px; margin: 20px auto; padding: 20px; }
     .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px; }
     .game-card { background: rgba(22,25,34,0.95); border-radius: 18px; overflow: hidden; cursor: pointer; transition: transform 0.18s ease, box-shadow 0.18s ease; box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
     .game-card:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0,0,0,0.42); }
-    .game-thumb { width: 100%; aspect-ratio: 1 / 1; background: linear-gradient(180deg,#222 0%, #1a1c20 100%); background-size: cover; background-position: center; position: relative; display: block; }
-    /* Blue play overlay */
-    .play-overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(3,122,255,0.12);
-      color: #e7f6ff;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      opacity: 0;
-      transition: opacity 0.18s ease, transform 0.18s ease;
-      backdrop-filter: none;
-      text-transform: none;
-    }
-    .play-overlay .icon { margin-right: 8px; font-size: 1.05rem; line-height: 1; }
+    .game-thumb { width: 100%; aspect-ratio: 1 / 1; background-size: cover; background-position: center; position: relative; display: block; }
+    .play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(3,122,255,0.12); color: #e7f6ff; font-size: 1rem; font-weight: 700; opacity: 0; transition: opacity 0.18s ease, transform 0.18s ease; }
     .game-card:hover .play-overlay { opacity: 1; transform: translateY(0); }
     .game-info { padding: 12px 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .game-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .game-meta { font-size: 0.75rem; color: #9aa0aa; }
-    .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-window { width: 92%; max-width: 1100px; height: 84%; background: #181b24; border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.6); }
-    .modal-header { padding: 12px 18px; background: #20232d; border-bottom: 1px solid #2a2f3a; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: #e6eef8; }
-    .close-btn { cursor: pointer; font-size: 1.3rem; }
-    .game-frame { width: 100%; height: 100%; border: none; background: #000; }
-    .modal-footer { padding: 10px; background: #20232d; border-top: 1px solid #2a2f3a; display: flex; justify-content: space-between; align-items: center; }
-    .modal-footer button { background: #2c3040; border: none; padding: 10px 14px; border-radius: 10px; color: white; cursor: pointer; transition: 0.15s; }
-    .modal-footer button:hover { background: #393f55; }
-    .placeholder-title { height: 14px; width: 80%; background: rgba(255,255,255,0.03); border-radius: 6px; }
-    @media (max-width:420px) { .game-title { font-size: 0.9rem; } .modal-window { height: 90%; } }
   </style>
 </head>
 <body>
-  <canvas id="stars"></canvas>
-  <div class="site">
-    <header>
-      <h1>FoundryGames</h1>
-      <p>Instant play. No limits. Just games.</p>
-    </header>
-    <main class="games-wrapper">
-      <div class="games-grid"></div>
-    </main>
-  </div>
+  <header>
+    <h1>FoundryGames</h1>
+    <p>Instant play. No limits. Just games.</p>
+    <div class="like-wrapper">
+      <button id="like-btn">👍 Like</button>
+      <span id="like-count">0</span>
+    </div>
+  </header>
+
+  <main class="games-wrapper">
+    <div class="games-grid"></div>
+  </main>
+
   <script>
+    // =========================
+    // GLOBAL LIKE SYSTEM CONFIG
+    // =========================
+    const GITHUB_TOKEN = "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"; // <-- PUT YOUR TOKEN HERE
+    const REPO = "cleverman456/googledocsalt.github.io";
+    const LIKES_FILE_PATH = "assets/likes.json";
+    const RAW_JSON_URL = `https://raw.githubusercontent.com/${REPO}/main/${LIKES_FILE_PATH}`;
+    const API_URL = `https://api.github.com/repos/${REPO}/contents/${LIKES_FILE_PATH}`;
+
+    const likeBtn = document.getElementById("like-btn");
+    const likeCount = document.getElementById("like-count");
+
+    // Fetch current likes
+    async function fetchLikes() {
+      try {
+        const res = await fetch(RAW_JSON_URL);
+        const data = await res.json();
+        likeCount.textContent = data.likes || 0;
+      } catch (e) {
+        console.error("Failed to fetch likes:", e);
+      }
+    }
+
+    // Add a like
+    async function addLike() {
+      try {
+        const getRes = await fetch(API_URL, {
+          headers: { Authorization: `token ${GITHUB_TOKEN}` }
+        });
+        const fileData = await getRes.json();
+        const sha = fileData.sha;
+        const content = JSON.parse(atob(fileData.content));
+        content.likes = (content.likes || 0) + 1;
+
+        const updateRes = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: "Increase like",
+            content: btoa(JSON.stringify(content, null, 2)),
+            sha: sha
+          })
+        });
+
+        if (!updateRes.ok) throw new Error("Failed to update likes");
+
+        likeCount.textContent = content.likes;
+      } catch (e) {
+        console.error(e);
+        alert("Error: Could not update likes. Check your token.");
+      }
+    }
+
+    likeBtn.addEventListener("click", addLike);
+    fetchLikes();
+
+    // =========================
+    // GAME LOADING CODE (simplified)
+    // =========================
     const githubUser = "cleverman456";
     const githubRepo = "googledocsalt.github.io";
     const githubBranch = "main";
     const gamesFolder = "assets";
-    const starsCanvas = document.getElementById("stars");
-    const dpr = Math.max(1, window.devicePixelRatio || 1);
-    function setupCanvas() {
-      const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-      const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-      starsCanvas.width = Math.round(vw * dpr);
-      starsCanvas.height = Math.round(vh * dpr);
-      starsCanvas.style.width = vw + "px";
-      starsCanvas.style.height = vh + "px";
-      const ctx = starsCanvas.getContext("2d");
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      return { ctx, vw, vh };
-    }
-    let { ctx, vw, vh } = setupCanvas();
-    let stars = [];
-    function createStars() {
-      const count = Math.round((vw * vh) / 9000);
-      stars = new Array(count).fill(0).map(() => {
-        return { x: Math.random() * vw, y: Math.random() * vh, r: Math.random() * 1.4 + 0.3, speed: Math.random() * 0.25 + 0.03, twinkle: Math.random() * Math.PI * 2 };
-      });
-    }
-    function resizeHandler() {
-      const res = setupCanvas();
-      ctx = res.ctx;
-      vw = res.vw;
-      vh = res.vh;
-      createStars();
-    }
-    function drawStars() {
-      ctx.clearRect(0, 0, vw, vh);
-      for (let i = 0; i < stars.length; i++) {
-        const s = stars[i];
-        s.y += s.speed;
-        s.twinkle += 0.03;
-        if (s.y > vh + 10) s.y = -10;
-        const alpha = 0.55 + Math.sin(s.twinkle) * 0.45;
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      requestAnimationFrame(drawStars);
-    }
-    createStars();
-    drawStars();
-    addEventListener("resize", resizeHandler);
-    async function findThumbnail(slug) {
-      const possible = ["png", "jpg", "jpeg", "webp"];
-      for (const ext of possible) {
-        const local = `${gamesFolder}/${slug}.${ext}`;
-        try {
-          const res = await fetch(local, { method: "HEAD" });
-          if (res.ok) return local;
-        } catch {}
-      }
-      for (const ext of possible) {
-        const git = `https://raw.githubusercontent.com/${githubUser}/${githubRepo}/${githubBranch}/assets/${slug}.${ext}`;
-        try {
-          const res = await fetch(git, { method: "HEAD" });
-          if (res.ok) return git;
-        } catch {}
-      }
-      return "https://via.placeholder.com/300x300?text=Game";
-    }
+
     async function loadGameFiles() {
       const api = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/${gamesFolder}`;
       const res = await fetch(api);
       const files = await res.json();
-      return Array.isArray(files) ? files.filter(f => f && f.name && f.name.endsWith(".html")).map(f => {
-        const slug = f.name.replace(".html", "");
-        const title = slug.replace(/-/g, " ");
+      return Array.isArray(files) ? files.filter(f => f.name.endsWith(".html")).map(f => {
+        const slug = f.name.replace(".html","");
+        const title = slug.replace(/-/g," ");
         return { slug, title };
       }) : [];
     }
-    function buildCardElement(game, thumb) {
+
+    function buildCardElement(game) {
       const el = document.createElement("div");
       el.className = "game-card";
       el.setAttribute("data-slug", game.slug);
-      const safeTitle = (game.title || "").replace(/'/g, "\\'");
       el.innerHTML = `
-        <div class="game-thumb" style="background-image:url('${thumb}')">
+        <div class="game-thumb" style="background-image:url('https://via.placeholder.com/300x300?text=Game')">
           <div class="play-overlay"><span class="icon">▶</span>Play Now</div>
         </div>
         <div class="game-info">
@@ -162,67 +138,32 @@
           </div>
         </div>
       `;
-      el.onclick = () => openGame(game.slug, safeTitle);
+      el.onclick = () => openGame(game.slug, game.title);
       return el;
     }
+
     function openGame(slug, title) {
       const modal = document.createElement("div");
       modal.className = "modal-bg";
       modal.innerHTML = `
-        <div class="modal-window">
-          <div class="modal-header">
+        <div class="modal-window" style="width:90%;height:80%;background:#181b24;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;">
+          <div class="modal-header" style="padding:12px 18px;background:#20232d;border-bottom:1px solid #2a2f3a;color:#e6eef8;display:flex;justify-content:space-between;">
             <span>${title}</span>
             <span class="close-btn" onclick="this.closest('.modal-bg').remove()">✖</span>
           </div>
-          <iframe src="${gamesFolder}/${slug}.html" class="game-frame"></iframe>
-          <div class="modal-footer">
-            <div>
-              <button onclick="document.querySelector('.modal-bg') && document.querySelector('.modal-bg').remove()">Close</button>
-            </div>
-            <div>
-              <button onclick="(function(b){ const f=b.closest('.modal-window').querySelector('.game-frame'); if(f && f.requestFullscreen) f.requestFullscreen(); })(this)">⛶ Fullscreen</button>
-            </div>
-          </div>
+          <iframe src="${gamesFolder}/${slug}.html" style="flex:1;border:none;background:#000;"></iframe>
         </div>
       `;
       document.body.appendChild(modal);
     }
+
     (async () => {
       const container = document.querySelector(".games-grid");
-      container.innerHTML = "";
-      const initialPlaceholderCount = 12;
-      for (let i = 0; i < initialPlaceholderCount; i++) {
-        const ph = document.createElement("div");
-        ph.className = "game-card";
-        ph.innerHTML = `
-          <div class="game-thumb" style="background-image:url('https://via.placeholder.com/300x300?text=Loading')">
-            <div class="play-overlay"><span class="icon">▶</span>Play Now</div>
-          </div>
-          <div class="game-info">
-            <div style="min-width:0">
-              <div class="placeholder-title"></div>
-            </div>
-          </div>
-        `;
-        container.appendChild(ph);
-      }
       const games = await loadGameFiles();
-      if (!games || games.length === 0) {
-        container.innerHTML = `<div style="color:#888;text-align:center;padding:40px">No games found</div>`;
-        return;
-      }
       container.innerHTML = "";
-      const thumbPromises = [];
-      for (const game of games) {
-        const card = buildCardElement(game, "https://via.placeholder.com/300x300?text=Game");
-        container.appendChild(card);
-        const p = findThumbnail(game.slug).then(thumb => {
-          const cardThumb = container.querySelector(`.game-card[data-slug="${game.slug}"] .game-thumb`);
-          if (cardThumb) cardThumb.style.backgroundImage = `url('${thumb}')`;
-        }).catch(() => {});
-        thumbPromises.push(p);
-      }
-      await Promise.allSettled(thumbPromises);
+      games.forEach(game => {
+        container.appendChild(buildCardElement(game));
+      });
     })();
   </script>
 </body>
