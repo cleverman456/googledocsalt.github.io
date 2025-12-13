@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Google Docs</title>
+<title id="tabTitle">Google Docs</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link id="favicon" rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ec/GDocs_Favicon_Recreation.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,6 @@ html{height:100%;background:#0f1115}
 body{
   min-height:100vh;
   font-family:Inter,sans-serif;
-  background:transparent;
   color:#fff;
   overflow-x:hidden
 }
@@ -25,29 +24,26 @@ body{
   z-index:0;
   pointer-events:none
 }
-.site{position:relative;z-index:2;min-height:100vh}
+.site{position:relative;z-index:2}
 
 header{
-  padding:32px 20px 20px;
+  padding:32px 20px 18px;
   text-align:center
 }
 header h1{
   font-size:2.2rem;
-  font-weight:700;
-  letter-spacing:-.5px
+  font-weight:700
 }
 header p{
-  margin-top:8px;
-  color:#9aa0aa;
-  font-size:.95rem
+  margin-top:6px;
+  color:#9aa0aa
 }
 
 .search-wrap{
   margin:18px auto 10px;
   max-width:520px;
   display:flex;
-  gap:10px;
-  justify-content:center
+  gap:10px
 }
 .search-wrap input{
   flex:1;
@@ -55,8 +51,7 @@ header p{
   border-radius:12px;
   border:none;
   background:#1c1f28;
-  color:#fff;
-  font-size:1rem
+  color:#fff
 }
 .search-wrap button{
   padding:10px 14px;
@@ -64,8 +59,7 @@ header p{
   border:none;
   background:#2c3040;
   color:#fff;
-  cursor:pointer;
-  transition:.15s
+  cursor:pointer
 }
 .search-wrap button:hover{background:#393f55}
 
@@ -94,7 +88,7 @@ header p{
 .game-thumb{
   width:100%;
   aspect-ratio:1/1;
-  background:linear-gradient(180deg,#222,#1a1c20);
+  background:#222;
   background-size:cover;
   background-position:center;
   position:relative
@@ -118,10 +112,7 @@ header p{
   overflow:hidden;
   text-overflow:ellipsis
 }
-.game-meta{
-  font-size:.75rem;
-  color:#9aa0aa
-}
+.game-meta{font-size:.75rem;color:#9aa0aa}
 
 /* MODAL */
 .modal-bg{
@@ -143,30 +134,49 @@ header p{
   flex-direction:column;
   overflow:hidden
 }
-.modal-header{
+.modal-header,.modal-footer{
   padding:12px 18px;
   background:#20232d;
-  border-bottom:1px solid #2a2f3a;
   display:flex;
   justify-content:space-between;
-  font-weight:600
+  align-items:center
 }
-.modal-footer{
+.game-frame{flex:1;border:none}
+
+/* SETTINGS PANEL */
+.settings-bg{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:2000
+}
+.settings{
+  width:380px;
+  background:#181b24;
+  border-radius:14px;
+  padding:18px
+}
+.settings h2{
+  margin-bottom:12px;
+  font-size:1.1rem
+}
+.settings label{
+  font-size:.9rem;
+  color:#9aa0aa
+}
+.settings select, .settings button{
+  width:100%;
+  margin-top:6px;
   padding:10px;
-  background:#20232d;
-  border-top:1px solid #2a2f3a;
-  display:flex;
-  justify-content:space-between
-}
-.modal-footer button{
-  background:#2c3040;
-  border:none;
-  padding:10px 14px;
   border-radius:10px;
-  color:#fff;
-  cursor:pointer
+  border:none;
+  background:#2c3040;
+  color:#fff
 }
-.game-frame{flex:1;border:none;background:#000}
+.settings button:hover{background:#393f55}
 </style>
 </head>
 
@@ -175,17 +185,40 @@ header p{
 
 <div class="site">
 <header>
-  <h1>Google Docs</h1>
+  <h1>FoundryGames</h1>
   <p>Instant play. No limits. Just games.</p>
   <div class="search-wrap">
     <input id="search" placeholder="Search games...">
-    <button id="settingsBtn">⚙</button>
+    <button onclick="openSettings()">⚙</button>
   </div>
 </header>
 
 <main class="games-wrapper">
   <div class="games-grid" id="grid"></div>
 </main>
+</div>
+
+<!-- SETTINGS -->
+<div class="settings-bg" id="settingsBG">
+  <div class="settings">
+    <h2>Settings</h2>
+
+    <label>Cloak Template</label>
+    <select id="cloakSelect">
+      <option value="">None</option>
+      <option value="docs">Google Docs</option>
+      <option value="drive">Google Drive</option>
+      <option value="clever">Clever</option>
+    </select>
+
+    <label style="margin-top:10px">Randomize Tab</label>
+    <button onclick="randomizeTab()">Random Title & Favicon</button>
+
+    <label style="margin-top:10px">Panic Key</label>
+    <p style="font-size:.75rem;color:#777">Press <b>ESC</b> to instantly cloak</p>
+
+    <button style="margin-top:14px" onclick="closeSettings()">Close</button>
+  </div>
 </div>
 
 <script>
@@ -210,8 +243,8 @@ function draw(){
     s.y+=s.s;
     s.t+=.03;
     if(s.y>h)s.y=-10;
+    ctx.fillStyle=`rgba(255,255,255,${.6+Math.sin(s.t)*.4})`;
     ctx.beginPath();
-    ctx.fillStyle=`rgba(255,255,255,${.55+Math.sin(s.t)*.45})`;
     ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
     ctx.fill();
   });
@@ -220,33 +253,68 @@ function draw(){
 resize();draw();
 addEventListener("resize",resize);
 
-/* ===== LOAD GAMES + IMAGE FINDER ===== */
-const user="cleverman456",repo="googledocsalt.github.io";
-const grid=document.getElementById("grid");
+/* ===== SETTINGS ===== */
+const cloaks={
+  docs:{title:"Google Docs",icon:"https://upload.wikimedia.org/wikipedia/commons/e/ec/GDocs_Favicon_Recreation.png"},
+  drive:{title:"Google Drive",icon:"https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png"},
+  clever:{title:"Clever | Log in",icon:"https://assets.clever.com/favicon.ico"}
+};
 
-async function findThumb(slug){
-  for(const ext of["png","jpg","jpeg","webp"]){
-    const path=`assets/${slug}.${ext}`;
-    try{
-      const r=await fetch(path,{method:"HEAD"});
-      if(r.ok)return path;
-    }catch{}
-  }
-  return "https://via.placeholder.com/300x300?text=Game";
+function openSettings(){settingsBG.style.display="flex"}
+function closeSettings(){settingsBG.style.display="none"}
+
+cloakSelect.onchange=()=>{
+  const c=cloaks[cloakSelect.value];
+  if(!c)return;
+  document.title=c.title;
+  favicon.href=c.icon;
+  localStorage.setItem("cloak",cloakSelect.value);
+};
+
+/* Restore cloak */
+const saved=localStorage.getItem("cloak");
+if(saved&&cloaks[saved]){
+  document.title=cloaks[saved].title;
+  favicon.href=cloaks[saved].icon;
+  cloakSelect.value=saved;
 }
 
-fetch(`https://api.github.com/repos/${user}/${repo}/contents/assets`)
+/* Panic Key */
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    document.title=cloaks.docs.title;
+    favicon.href=cloaks.docs.icon;
+  }
+});
+
+/* Randomizer */
+function randomizeTab(){
+  const list=Object.values(cloaks);
+  const r=list[Math.floor(Math.random()*list.length)];
+  document.title=r.title;
+  favicon.href=r.icon;
+}
+
+/* ===== SEARCH ===== */
+search.oninput=e=>{
+  const q=e.target.value.toLowerCase();
+  document.querySelectorAll(".game-card").forEach(c=>{
+    c.style.display=c.dataset.title.includes(q)?"":"none";
+  });
+};
+
+/* ===== LOAD GAMES ===== */
+fetch("https://api.github.com/repos/cleverman456/googledocsalt.github.io/contents/assets")
 .then(r=>r.json())
-.then(async files=>{
-  for(const f of files.filter(x=>x.name.endsWith(".html"))){
+.then(files=>{
+  files.filter(f=>f.name.endsWith(".html")).forEach(f=>{
     const slug=f.name.replace(".html","");
     const card=document.createElement("div");
     card.className="game-card";
     card.dataset.title=slug.toLowerCase();
-    const thumb=await findThumb(slug);
     card.innerHTML=`
-      <div class="game-thumb" style="background-image:url('${thumb}')">
-        <div class="play-overlay">▶ Play Now</div>
+      <div class="game-thumb">
+        <div class="play-overlay">▶ Play</div>
       </div>
       <div class="game-info">
         <div class="game-title">${slug.replace(/-/g," ")}</div>
@@ -254,10 +322,9 @@ fetch(`https://api.github.com/repos/${user}/${repo}/contents/assets`)
       </div>`;
     card.onclick=()=>openGame(slug);
     grid.appendChild(card);
-  }
+  });
 });
 
-/* ===== OPEN GAME ===== */
 function openGame(slug){
   const m=document.createElement("div");
   m.className="modal-bg";
@@ -275,14 +342,6 @@ function openGame(slug){
     </div>`;
   document.body.appendChild(m);
 }
-
-/* ===== SEARCH ===== */
-document.getElementById("search").oninput=e=>{
-  const q=e.target.value.toLowerCase();
-  document.querySelectorAll(".game-card").forEach(c=>{
-    c.style.display=c.dataset.title.includes(q)?"":"none";
-  });
-};
 </script>
 </body>
 </html>
