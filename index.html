@@ -304,26 +304,62 @@ search.oninput=e=>{
 };
 
 /* ===== LOAD GAMES ===== */
+const RAW_BASE =
+  "https://raw.githubusercontent.com/cleverman456/googledocsalt.github.io/main/assets";
+
 fetch("https://api.github.com/repos/cleverman456/googledocsalt.github.io/contents/assets")
-.then(r=>r.json())
-.then(files=>{
-  files.filter(f=>f.name.endsWith(".html")).forEach(f=>{
-    const slug=f.name.replace(".html","");
-    const card=document.createElement("div");
-    card.className="game-card";
-    card.dataset.title=slug.toLowerCase();
-    card.innerHTML=`
-      <div class="game-thumb">
-        <div class="play-overlay">▶ Play</div>
-      </div>
+.then(r => r.json())
+.then(files => {
+
+  const games = files.filter(f => f.name.endsWith(".html"));
+
+  games.forEach(f => {
+    const slug = f.name.replace(".html", "");
+    const card = document.createElement("div");
+    card.className = "game-card";
+    card.dataset.title = slug.toLowerCase();
+
+    const thumb = document.createElement("div");
+    thumb.className = "game-thumb";
+
+    // Try thumbnail extensions (same name as game)
+    const exts = ["png","jpg","jpeg","webp"];
+    let found = false;
+
+    exts.forEach(ext => {
+      const img = new Image();
+      img.src = `${RAW_BASE}/${slug}.${ext}`;
+      img.onload = () => {
+        if (!found) {
+          found = true;
+          thumb.style.backgroundImage = `url(${img.src})`;
+        }
+      };
+    });
+
+    // Fallback if no thumbnail exists
+    setTimeout(() => {
+      if (!found) {
+        thumb.style.background =
+          "linear-gradient(135deg,#2c3040,#1c1f28)";
+      }
+    }, 300);
+
+    thumb.innerHTML = `<div class="play-overlay">▶ Play</div>`;
+
+    card.innerHTML = `
       <div class="game-info">
         <div class="game-title">${slug.replace(/-/g," ")}</div>
         <div class="game-meta">Play Now</div>
-      </div>`;
-    card.onclick=()=>openGame(slug);
+      </div>
+    `;
+
+    card.prepend(thumb);
+    card.onclick = () => openGame(slug);
     grid.appendChild(card);
   });
 });
+
 
 function openGame(slug){
   const m=document.createElement("div");
