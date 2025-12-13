@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title id="tabTitle">Google Docs</title>
+<title id="tabTitle">FoundryGames</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link id="favicon" rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ec/GDocs_Favicon_Recreation.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -70,7 +70,7 @@ header p{
 }
 .games-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
   gap:18px
 }
 .game-card{
@@ -91,7 +91,8 @@ header p{
   background:#222;
   background-size:cover;
   background-position:center;
-  position:relative
+  position:relative;
+  border-radius:8px;
 }
 .play-overlay{
   position:absolute;
@@ -137,7 +138,7 @@ header p{
 .modal-header,.modal-footer{
   padding:12px 18px;
   background:#20232d;
-  display:flex;
+  display:flex
   justify-content:space-between;
   align-items:center
 }
@@ -260,6 +261,10 @@ const cloaks={
   clever:{title:"Clever | Log in",icon:"https://assets.clever.com/favicon.ico"}
 };
 
+const settingsBG = document.getElementById("settingsBG");
+const cloakSelect = document.getElementById("cloakSelect");
+const favicon = document.getElementById("favicon");
+
 function openSettings(){settingsBG.style.display="flex"}
 function closeSettings(){settingsBG.style.display="none"}
 
@@ -296,6 +301,7 @@ function randomizeTab(){
 }
 
 /* ===== SEARCH ===== */
+const search = document.getElementById("search");
 search.oninput=e=>{
   const q=e.target.value.toLowerCase();
   document.querySelectorAll(".game-card").forEach(c=>{
@@ -306,13 +312,12 @@ search.oninput=e=>{
 /* ===== LOAD GAMES ===== */
 const RAW_BASE =
   "https://raw.githubusercontent.com/cleverman456/googledocsalt.github.io/main/assets";
+const grid = document.getElementById("grid");
 
 fetch("https://api.github.com/repos/cleverman456/googledocsalt.github.io/contents/assets")
 .then(r => r.json())
 .then(files => {
-
   const games = files.filter(f => f.name.endsWith(".html"));
-
   games.forEach(f => {
     const slug = f.name.replace(".html", "");
     const card = document.createElement("div");
@@ -322,10 +327,12 @@ fetch("https://api.github.com/repos/cleverman456/googledocsalt.github.io/content
     const thumb = document.createElement("div");
     thumb.className = "game-thumb";
 
-    // Try thumbnail extensions (same name as game)
+    thumb.style.backgroundColor = "#222";
+    thumb.style.backgroundSize = "cover";
+    thumb.style.backgroundPosition = "center";
+
     const exts = ["png","jpg","jpeg","webp"];
     let found = false;
-
     exts.forEach(ext => {
       const img = new Image();
       img.src = `${RAW_BASE}/${slug}.${ext}`;
@@ -337,11 +344,9 @@ fetch("https://api.github.com/repos/cleverman456/googledocsalt.github.io/content
       };
     });
 
-    // Fallback if no thumbnail exists
     setTimeout(() => {
       if (!found) {
-        thumb.style.background =
-          "linear-gradient(135deg,#2c3040,#1c1f28)";
+        thumb.style.background = "linear-gradient(135deg,#2c3040,#1c1f28)";
       }
     }, 300);
 
@@ -360,20 +365,20 @@ fetch("https://api.github.com/repos/cleverman456/googledocsalt.github.io/content
   });
 });
 
-
+/* ===== MODAL ===== */
 function openGame(slug){
   const m=document.createElement("div");
   m.className="modal-bg";
   m.innerHTML=`
     <div class="modal-window">
       <div class="modal-header">
-        <span>${slug}</span>
+        <span>${slug.replace(/-/g," ")}</span>
         <span style="cursor:pointer" onclick="this.closest('.modal-bg').remove()">✖</span>
       </div>
       <iframe src="assets/${slug}.html" class="game-frame"></iframe>
       <div class="modal-footer">
         <button onclick="this.closest('.modal-bg').remove()">Close</button>
-        <button onclick="document.querySelector('.game-frame').requestFullscreen()">⛶ Fullscreen</button>
+        <button onclick="document.querySelector('.modal-bg .game-frame').requestFullscreen()">⛶ Fullscreen</button>
       </div>
     </div>`;
   document.body.appendChild(m);
