@@ -11,131 +11,162 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+html{height:100%;background:#0f1115}
 body{
+  min-height:100vh;
   font-family:Inter,sans-serif;
-  background:#0f1115;
+  background:transparent;
   color:#fff;
-  overflow-x:hidden;
-  transition:.25s
+  overflow-x:hidden
 }
-#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+#stars{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none
+}
 .site{position:relative;z-index:2;min-height:100vh}
 
 header{
-  padding:32px 20px 24px;
-  text-align:center;
+  padding:32px 20px 20px;
+  text-align:center
 }
-header h1{font-size:2.2rem;font-weight:700}
-header p{color:#9aa0aa;margin-top:6px}
+header h1{
+  font-size:2.2rem;
+  font-weight:700;
+  letter-spacing:-.5px
+}
+header p{
+  margin-top:8px;
+  color:#9aa0aa;
+  font-size:.95rem
+}
 
 .search-wrap{
-  margin:20px auto 0;
+  margin:18px auto 10px;
   max-width:520px;
   display:flex;
   gap:10px;
-  justify-content:center;
+  justify-content:center
 }
 .search-wrap input{
   flex:1;
-  padding:12px 16px;
-  border-radius:14px;
+  padding:10px 14px;
+  border-radius:12px;
   border:none;
   background:#1c1f28;
   color:#fff;
-  font-size:1rem;
+  font-size:1rem
 }
 .search-wrap button{
-  padding:12px 16px;
+  padding:10px 14px;
+  border-radius:12px;
   border:none;
-  border-radius:14px;
   background:#2c3040;
   color:#fff;
-  cursor:pointer
+  cursor:pointer;
+  transition:.15s
 }
-.search-wrap button:hover{background:#3a4060}
+.search-wrap button:hover{background:#393f55}
 
-.games-wrapper{max-width:1300px;margin:0 auto;padding:30px 20px}
+.games-wrapper{
+  max-width:1300px;
+  margin:0 auto;
+  padding:20px
+}
 .games-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
   gap:18px
 }
 .game-card{
-  background:#161922;
+  background:rgba(22,25,34,.95);
   border-radius:18px;
   overflow:hidden;
   cursor:pointer;
   transition:.18s;
-  box-shadow:0 6px 18px rgba(0,0,0,.25)
+  box-shadow:0 6px 18px rgba(0,0,0,.22)
 }
 .game-card:hover{
   transform:translateY(-6px);
-  box-shadow:0 14px 30px rgba(0,0,0,.45)
+  box-shadow:0 12px 28px rgba(0,0,0,.42)
 }
 .game-thumb{
+  width:100%;
   aspect-ratio:1/1;
-  background:#222 center/cover no-repeat;
+  background:linear-gradient(180deg,#222,#1a1c20);
+  background-size:cover;
+  background-position:center;
   position:relative
 }
 .play-overlay{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(0,110,255,.15);
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(3,122,255,.12);
   font-weight:700;
   opacity:0;
-  transition:.15s
+  transition:.18s
 }
 .game-card:hover .play-overlay{opacity:1}
-.game-info{padding:12px 14px}
+.game-info{padding:12px 14px 16px}
 .game-title{
   font-weight:600;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis
 }
+.game-meta{
+  font-size:.75rem;
+  color:#9aa0aa
+}
 
 /* MODAL */
 .modal-bg{
-  position:fixed;inset:0;
+  position:fixed;
+  inset:0;
   background:rgba(0,0,0,.7);
-  display:flex;align-items:center;justify-content:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   z-index:1000
 }
 .modal-window{
-  width:92%;max-width:700px;
+  width:92%;
+  max-width:1100px;
+  height:84%;
   background:#181b24;
-  border-radius:16px;
+  border-radius:14px;
+  display:flex;
+  flex-direction:column;
   overflow:hidden
 }
 .modal-header{
-  padding:14px 18px;
+  padding:12px 18px;
   background:#20232d;
-  display:flex;justify-content:space-between;
+  border-bottom:1px solid #2a2f3a;
+  display:flex;
+  justify-content:space-between;
   font-weight:600
 }
-.modal-content{
-  padding:20px;
+.modal-footer{
+  padding:10px;
+  background:#20232d;
+  border-top:1px solid #2a2f3a;
   display:flex;
-  flex-direction:column;
-  gap:16px
+  justify-content:space-between
 }
-select{
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  background:#1c1f28;
-  color:#fff;
+.modal-footer button{
+  background:#2c3040;
   border:none;
-  appearance:none
+  padding:10px 14px;
+  border-radius:10px;
+  color:#fff;
+  cursor:pointer
 }
-
-/* THEMES */
-.theme-light{background:#f4f6fb;color:#111}
-.theme-midnight{background:#05070c}
-.theme-ocean{background:#071a2f}
-.theme-rose{background:#2b1218}
-.theme-slate{background:#12151c}
+.game-frame{flex:1;border:none;background:#000}
 </style>
 </head>
 
@@ -146,7 +177,6 @@ select{
 <header>
   <h1 id="siteTitle">Google Docs</h1>
   <p>Instant play. No limits. Just games.</p>
-
   <div class="search-wrap">
     <input id="search" placeholder="Search games...">
     <button id="settingsBtn">⚙</button>
@@ -159,39 +189,84 @@ select{
 </div>
 
 <script>
+/* ===== STAR BACKGROUND ===== */
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+let w,h,stars=[];
+function resize(){
+  w=canvas.width=innerWidth;
+  h=canvas.height=innerHeight;
+  stars=Array.from({length:(w*h)/9000},()=>({
+    x:Math.random()*w,
+    y:Math.random()*h,
+    r:Math.random()*1.4+.3,
+    s:Math.random()*.25+.05,
+    t:Math.random()*Math.PI*2
+  }));
+}
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  stars.forEach(s=>{
+    s.y+=s.s;
+    s.t+=.03;
+    if(s.y>h)s.y=-10;
+    ctx.beginPath();
+    ctx.fillStyle=`rgba(255,255,255,${.55+Math.sin(s.t)*.45})`;
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fill();
+  });
+  requestAnimationFrame(draw);
+}
+resize();draw();
+addEventListener("resize",resize);
+
 /* ===== about:blank iframe ===== */
 if(localStorage.openBlank==="1" && location.hostname){
-  const win = window.open("about:blank","_self");
+  const win=window.open("about:blank","_self");
   win.document.write(`
-    <style>html,body,iframe{margin:0;height:100%;width:100%;border:none}</style>
+    <style>html,body,iframe{margin:0;width:100%;height:100%;border:none}</style>
     <iframe src="${location.href}"></iframe>
   `);
 }
 
-/* ===== Game loader ===== */
-const user="cleverman456", repo="googledocsalt.github.io";
+/* ===== LOAD GAMES + IMAGE FINDER ===== */
+const user="cleverman456",repo="googledocsalt.github.io";
 const grid=document.getElementById("grid");
+
+async function findThumb(slug){
+  for(const ext of["png","jpg","jpeg","webp"]){
+    const path=`assets/${slug}.${ext}`;
+    try{
+      const r=await fetch(path,{method:"HEAD"});
+      if(r.ok)return path;
+    }catch{}
+  }
+  return "https://via.placeholder.com/300x300?text=Game";
+}
 
 fetch(`https://api.github.com/repos/${user}/${repo}/contents/assets`)
 .then(r=>r.json())
-.then(files=>{
-  files.filter(f=>f.name.endsWith(".html")).forEach(f=>{
+.then(async files=>{
+  for(const f of files.filter(x=>x.name.endsWith(".html"))){
     const slug=f.name.replace(".html","");
     const card=document.createElement("div");
     card.className="game-card";
     card.dataset.title=slug.toLowerCase();
+    const thumb=await findThumb(slug);
     card.innerHTML=`
-      <div class="game-thumb">
-        <div class="play-overlay">▶ Play</div>
+      <div class="game-thumb" style="background-image:url('${thumb}')">
+        <div class="play-overlay">▶ Play Now</div>
       </div>
       <div class="game-info">
         <div class="game-title">${slug.replace(/-/g," ")}</div>
+        <div class="game-meta">Play Now</div>
       </div>`;
     card.onclick=()=>openGame(slug);
     grid.appendChild(card);
-  });
+  }
 });
 
+/* ===== OPEN GAME ===== */
 function openGame(slug){
   const m=document.createElement("div");
   m.className="modal-bg";
@@ -201,12 +276,16 @@ function openGame(slug){
         <span>${slug}</span>
         <span onclick="this.closest('.modal-bg').remove()">✖</span>
       </div>
-      <iframe src="assets/${slug}.html" style="border:none;height:70vh"></iframe>
+      <iframe src="assets/${slug}.html" class="game-frame"></iframe>
+      <div class="modal-footer">
+        <button onclick="this.closest('.modal-bg').remove()">Close</button>
+        <button onclick="document.querySelector('.game-frame').requestFullscreen()">⛶ Fullscreen</button>
+      </div>
     </div>`;
   document.body.appendChild(m);
 }
 
-/* ===== Search ===== */
+/* ===== SEARCH ===== */
 document.getElementById("search").oninput=e=>{
   const q=e.target.value.toLowerCase();
   document.querySelectorAll(".game-card").forEach(c=>{
@@ -214,50 +293,10 @@ document.getElementById("search").oninput=e=>{
   });
 };
 
-/* ===== Settings ===== */
-const themes={
-  Dark:"", Light:"theme-light", Midnight:"theme-midnight",
-  Ocean:"theme-ocean", Rose:"theme-rose", Slate:"theme-slate"
-};
-const cloaks={
-  "Google Docs":["Google Docs","https://upload.wikimedia.org/wikipedia/commons/e/ec/GDocs_Favicon_Recreation.png"],
-  "Google Drive":["Google Drive","https://ssl.gstatic.com/images/branding/product/2x/drive_2020q4_48dp.png"],
-  "Clever":["Clever","https://www.clever.com/favicon.ico"],
-  "Google Classroom":["Classes","https://ssl.gstatic.com/classroom/favicon.png"],
-  "Canvas":["Dashboard","https://canvas.instructure.com/favicon.ico"]
-};
-
+/* ===== SETTINGS (simple toggle retained) ===== */
 document.getElementById("settingsBtn").onclick=()=>{
-  const m=document.createElement("div");
-  m.className="modal-bg";
-  m.innerHTML=`
-  <div class="modal-window">
-    <div class="modal-header">
-      <span>Settings</span>
-      <span onclick="this.closest('.modal-bg').remove()">✖</span>
-    </div>
-    <div class="modal-content">
-      <label><input type="checkbox" id="blank"> Open in about:blank</label>
-      <select id="theme"></select>
-      <select id="cloak"></select>
-      <button id="apply">Apply</button>
-    </div>
-  </div>`;
-  document.body.appendChild(m);
-
-  const tSel=document.getElementById("theme");
-  Object.keys(themes).forEach(t=>tSel.innerHTML+=`<option>${t}</option>`);
-
-  const cSel=document.getElementById("cloak");
-  Object.keys(cloaks).forEach(c=>cSel.innerHTML+=`<option>${c}</option>`);
-
-  document.getElementById("apply").onclick=()=>{
-    document.body.className=themes[tSel.value];
-    document.title=cloaks[cSel.value][0];
-    favicon.href=cloaks[cSel.value][1];
-    localStorage.openBlank=document.getElementById("blank").checked?"1":"";
-    m.remove();
-  };
+  localStorage.openBlank=localStorage.openBlank==="1"?"":"1";
+  alert("about:blank mode " + (localStorage.openBlank?"enabled":"disabled"));
 };
 </script>
 </body>
