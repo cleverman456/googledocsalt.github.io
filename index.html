@@ -29,11 +29,28 @@ header p{margin-top:6px;color:#9aa0aa}
 .games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
 .game-card{background:rgba(22,25,34,.95);border-radius:18px;overflow:hidden;cursor:pointer;transition:.18s;box-shadow:0 6px 18px rgba(0,0,0,.22)}
 .game-card:hover{transform:translateY(-6px);box-shadow:0 12px 28px rgba(0,0,0,.42)}
-.game-thumb{width:100%;aspect-ratio:1/1;background:#222;background-size:cover;background-position:center;position:relative;border-radius:8px;}
-.play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(3,122,255,.12);font-weight:700;opacity:0;transition:.18s}
+
+.game-thumb{
+  width:100%;
+  height:150px; /* fixed height for uniform sizing */
+  background:#222;
+  background-size:cover;
+  background-position:center;
+  position:relative;
+  border-radius:8px;
+}
+
+.play-overlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(3,122,255,.12);font-weight:700;opacity:0;transition:.18s
+}
 .game-card:hover .play-overlay{opacity:1}
 .game-info{padding:12px 14px 16px}
-.game-title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.game-title{
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis
+}
 .game-meta{font-size:.75rem;color:#9aa0aa}
 
 /* MODAL */
@@ -117,7 +134,7 @@ const search=document.getElementById("search");
 search.oninput=e=>{
   const q=e.target.value.toLowerCase();
   document.querySelectorAll(".game-card").forEach(c=>{
-    c.style.display=c.dataset.title.includes(q)?"":"none";
+    c.style.display=c.dataset.title.toLowerCase().includes(q)?"":"none";
   });
 };
 
@@ -141,23 +158,25 @@ async function initGames(){
     entries.forEach(entry => {
       if(entry.isIntersecting){
         const thumb = entry.target.querySelector(".game-thumb");
-        const slug = entry.target.dataset.title.toLowerCase();
+        const slug = entry.target.dataset.title; // keep original capitalization
 
         const exts = ["png","jpg","jpeg","webp"];
         let found = false;
 
         for(const ext of exts){
           const name = `${slug}.${ext}`;
-          if(availableImages.includes(name)){
+          if(availableImages.includes(name.toLowerCase())){
             const img = new Image();
             img.src = `${IMG_BASE}/${name}`;
             img.onload = () => {
               if(!found){
                 found = true;
                 thumb.style.backgroundImage = `url(${img.src})`;
+                thumb.style.backgroundSize = "cover";
+                thumb.style.backgroundPosition = "center";
               }
             };
-            break; // stop checking extensions after first found
+            break;
           }
         }
 
@@ -171,7 +190,7 @@ async function initGames(){
   }, {rootMargin:"150px"});
 
   games.forEach(f => {
-    const slug = f.name.replace(".html","").toLowerCase();
+    const slug = f.name.replace(".html",""); // keep capitalization
     const card = document.createElement("div");
     card.className = "game-card";
     card.dataset.title = slug;
