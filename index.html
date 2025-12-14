@@ -308,82 +308,90 @@ search.oninput=e=>{
   });
 };
 
-const IMG_BASE="./imgs"; // relative path to root imgs folder
+const ASSETS_API="https://api.github.com/repos/cleverman456/googledocsalt.github.io/contents/assets";
+const IMGS_API="https://api.github.com/repos/cleverman456/googledocsalt.github.io/contents/imgs";
+const IMG_BASE="./imgs"; // fallback relative path
 const grid=document.getElementById("grid");
 
-// Load thumbnail by trying multiple extensions sequentially
-function loadThumbnail(thumb, slug, exts, fallback){
-  let found=false;
-  let i=0;
+// Fetch images from the imgs folder
+let availableImages = [];
+fetch(IMGS_API)
+  .then(r => r.json())
+  .then(imgFiles => {
+    availableImages = imgFiles.map(f => f.name); // store image filenames
+  });
 
-  function tryNext(){
-    if(i>=exts.length){
-      if(!found) thumb.style.background=fallback;
-      return;
+// Load thumbnail by checking if image exists
+function loadThumbnail(thumb, slug, fallback){
+  const exts = ["png","jpg","jpeg","webp"];
+  let found = false;
+
+  for(const ext of exts){
+    const name = `${slug}.${ext}`;
+    if(availableImages.includes(name)){
+      const img = new Image();
+      img.src = `${IMG_BASE}/${name}`;
+      img.onload = () => {
+        if(!found){
+          found = true;
+          requestAnimationFrame(()=>{
+            thumb.style.backgroundImage=`url(${img.src})`;
+            thumb.style.backgroundSize="cover";
+            thumb.style.backgroundPosition="center";
+          });
+        }
+      };
+      break;
     }
-    const img=new Image();
-    img.src=`${IMG_BASE}/${slug}.${exts[i]}`; // use relative path
-    img.onload=()=>{
-      if(!found){
-        found=true;
-        requestAnimationFrame(()=>{
-          thumb.style.backgroundImage=`url(${img.src})`;
-          thumb.style.backgroundSize="cover";
-          thumb.style.backgroundPosition="center";
-        });
-      }
-    };
-    img.onerror=()=>{
-      i++;
-      tryNext();
-    };
   }
 
-  tryNext();
+  if(!found){
+    thumb.style.background = fallback;
+  }
 }
 
-// Fetch game HTML files
-fetch("./assets") // optional: still fetch from assets folder for HTML files
-.then(r=>r.json())
-.then(files=>{
-  const games=files.filter(f=>f.name.endsWith(".html"));
+// Fetch HTML files from assets
+fetch(ASSETS_API)
+  .then(r => r.json())
+  .then(files => {
+    const games = files.filter(f => f.name.endsWith(".html"));
 
-  const observer=new IntersectionObserver((entries,obs)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        const thumb=entry.target.querySelector(".game-thumb");
-        const slug=entry.target.dataset.title;
-        loadThumbnail(thumb, slug, ["png","jpg","jpeg","webp"], "linear-gradient(135deg,#2c3040,#1c1f28)");
-        obs.unobserve(entry.target);
-      }
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          const thumb = entry.target.querySelector(".game-thumb");
+          const slug = entry.target.dataset.title;
+          loadThumbnail(thumb, slug, "linear-gradient(135deg,#2c3040,#1c1f28)");
+          obs.unobserve(entry.target);
+        }
+      });
+    }, {rootMargin: "150px"});
+
+    games.forEach(f => {
+      const slug = f.name.replace(".html","");
+      const card = document.createElement("div");
+      card.className = "game-card";
+      card.dataset.title = slug.toLowerCase();
+
+      const thumb = document.createElement("div");
+      thumb.className = "game-thumb";
+      thumb.style.backgroundColor = "#222";
+      thumb.innerHTML = `<div class="play-overlay">▶ Play</div>`;
+
+      card.innerHTML = `
+        <div class="game-info">
+          <div class="game-title">${slug.replace(/-/g," ")}</div>
+          <div class="game-meta">Play Now</div>
+        </div>
+      `;
+
+      card.prepend(thumb);
+      card.onclick = () => openGame(slug);
+      grid.appendChild(card);
+
+      observer.observe(card);
     });
-  },{rootMargin:"150px"});
-
-  games.forEach(f=>{
-    const slug=f.name.replace(".html","");
-    const card=document.createElement("div");
-    card.className="game-card";
-    card.dataset.title=slug.toLowerCase();
-
-    const thumb=document.createElement("div");
-    thumb.className="game-thumb";
-    thumb.style.backgroundColor="#222";
-    thumb.innerHTML=`<div class="play-overlay">▶ Play</div>`;
-
-    card.innerHTML=`
-      <div class="game-info">
-        <div class="game-title">${slug.replace(/-/g," ")}</div>
-        <div class="game-meta">Play Now</div>
-      </div>
-    `;
-
-    card.prepend(thumb);
-    card.onclick=()=>openGame(slug);
-    grid.appendChild(card);
-
-    observer.observe(card);
   });
-});
 
 
 
