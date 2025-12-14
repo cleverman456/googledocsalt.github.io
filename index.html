@@ -308,8 +308,7 @@ search.oninput=e=>{
   });
 };
 
-const RAW_BASE="https://raw.githubusercontent.com/cleverman456/googledocsalt.github.io/main/assets";
-const IMG_BASE=RAW_BASE+"/imgs"; // <-- new image folder
+const IMG_BASE="./imgs"; // relative path to root imgs folder
 const grid=document.getElementById("grid");
 
 // Load thumbnail by trying multiple extensions sequentially
@@ -323,7 +322,7 @@ function loadThumbnail(thumb, slug, exts, fallback){
       return;
     }
     const img=new Image();
-    img.src=`${IMG_BASE}/${slug}.${exts[i]}`; // <-- load from imgs folder
+    img.src=`${IMG_BASE}/${slug}.${exts[i]}`; // use relative path
     img.onload=()=>{
       if(!found){
         found=true;
@@ -344,7 +343,7 @@ function loadThumbnail(thumb, slug, exts, fallback){
 }
 
 // Fetch game HTML files
-fetch("https://api.github.com/repos/cleverman456/googledocsalt.github.io/contents/assets")
+fetch("./assets") // optional: still fetch from assets folder for HTML files
 .then(r=>r.json())
 .then(files=>{
   const games=files.filter(f=>f.name.endsWith(".html"));
