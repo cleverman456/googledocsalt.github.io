@@ -10,62 +10,154 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
+/* ===== GENERAL ===== */
 *{box-sizing:border-box;margin:0;padding:0}
 html{height:100%;background:#0f1115}
 body{min-height:100vh;font-family:Inter,sans-serif;color:#fff;overflow-x:hidden}
 #stars{position:fixed;inset:0;z-index:0;pointer-events:none}
 .site{position:relative;z-index:2}
 
-header{padding:32px 20px 18px;text-align:center}
-header h1{font-size:2.2rem;font-weight:700}
-header p{margin-top:6px;color:#9aa0aa}
+/* ===== HEADER ===== */
+header{
+  padding:40px 20px 24px;
+  text-align:center;
+}
+header h1{
+  font-size:2.6rem;
+  font-weight:700;
+  margin-bottom:6px;
+}
+header p{
+  font-size:1.1rem;
+  color:#9aa0aa;
+  margin-bottom:16px;
+}
 
-.search-wrap{margin:18px auto 10px;max-width:520px;display:flex;gap:10px}
-.search-wrap input{flex:1;padding:10px 14px;border-radius:12px;border:none;background:#1c1f28;color:#fff}
-.search-wrap button{padding:10px 14px;border-radius:12px;border:none;background:#2c3040;color:#fff;cursor:pointer}
-.search-wrap button:hover{background:#393f55}
+/* ===== SEARCH BAR ===== */
+.search-wrap{
+  margin:0 auto 20px;
+  max-width:520px;
+  display:flex;
+  gap:10px;
+}
+.search-wrap input{
+  flex:1;
+  padding:12px 16px;
+  border-radius:14px;
+  border:none;
+  background:#1c1f28;
+  color:#fff;
+  font-size:1rem;
+}
+.search-wrap input::placeholder{
+  color:#888;
+}
+.search-wrap button{
+  padding:12px 16px;
+  border-radius:14px;
+  border:none;
+  background:#2c3040;
+  color:#fff;
+  cursor:pointer;
+  font-weight:600;
+  transition:.2s;
+}
+.search-wrap button:hover{
+  background:#393f55;
+}
 
-.games-wrapper{max-width:1300px;margin:0 auto;padding:20px}
-.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
-.game-card{background:rgba(22,25,34,.95);border-radius:18px;overflow:hidden;cursor:pointer;transition:.18s;box-shadow:0 6px 18px rgba(0,0,0,.22)}
-.game-card:hover{transform:translateY(-6px);box-shadow:0 12px 28px rgba(0,0,0,.42)}
+/* ===== GAMES GRID ===== */
+.games-wrapper{
+  max-width:1300px;
+  margin:0 auto;
+  padding:20px;
+}
+.games-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:18px;
+}
 
+/* ===== GAME CARD ===== */
+.game-card{
+  background:rgba(22,25,34,.95);
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.2s;
+  box-shadow:0 6px 18px rgba(0,0,0,.22);
+}
+.game-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 12px 28px rgba(0,0,0,.42);
+}
+
+/* ===== THUMBNAIL ===== */
 .game-thumb{
   width:100%;
-  height:150px; /* fixed height for uniform sizing */
+  height:150px;
   background:#222;
   background-size:cover;
   background-position:center;
   position:relative;
   border-radius:8px;
 }
-
 .play-overlay{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(3,122,255,.12);font-weight:700;opacity:0;transition:.18s
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(3,122,255,.12);
+  font-weight:700;
+  font-size:1.1rem;
+  opacity:0;
+  transition:.18s;
 }
 .game-card:hover .play-overlay{opacity:1}
-.game-info{padding:12px 14px 16px}
+
+/* ===== GAME INFO ===== */
+.game-info{
+  padding:14px 16px 18px;
+}
 .game-title{
   font-weight:600;
+  font-size:1rem;
   white-space:nowrap;
   overflow:hidden;
-  text-overflow:ellipsis
+  text-overflow:ellipsis;
+  margin-bottom:4px;
 }
-.game-meta{font-size:.75rem;color:#9aa0aa}
+.game-meta{
+  font-size:.8rem;
+  color:#9aa0aa;
+  text-align:left;
+}
 
-/* MODAL */
+/* ===== MODAL ===== */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:1000}
 .modal-window{width:92%;max-width:1100px;height:84%;background:#181b24;border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
 .modal-header,.modal-footer{padding:12px 18px;background:#20232d;display:flex;justify-content:space-between;align-items:center}
 .game-frame{flex:1;border:none}
 
-/* SETTINGS PANEL */
+/* ===== SETTINGS PANEL ===== */
 .settings-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:2000}
 .settings{width:380px;background:#181b24;border-radius:14px;padding:18px}
-.settings h2{margin-bottom:12px;font-size:1.1rem}
-.settings label{font-size:.9rem;color:#9aa0aa}
-.settings select,.settings button{width:100%;margin-top:6px;padding:10px;border-radius:10px;border:none;background:#2c3040;color:#fff}
-.settings button:hover{background:#393f55}
+.settings h2{margin-bottom:12px;font-size:1.2rem}
+.settings label{font-size:.95rem;color:#9aa0aa}
+.settings select,.settings button{
+  width:100%;
+  margin-top:8px;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  background:#2c3040;
+  color:#fff;
+  font-size:1rem;
+  cursor:pointer;
+  transition:.2s;
+}
+.settings button:hover,.settings select:hover{background:#393f55}
 </style>
 </head>
 
@@ -144,12 +236,10 @@ const IMG_BASE="./imgs";
 const grid=document.getElementById("grid");
 
 async function initGames(){
-  // Fetch images
   const imgRes = await fetch(IMGS_API);
   const imgFiles = await imgRes.json();
   const availableImages = imgFiles.map(f => f.name.toLowerCase());
 
-  // Fetch HTML games
   const assetRes = await fetch(ASSETS_API);
   const files = await assetRes.json();
   const games = files.filter(f => f.name.endsWith(".html"));
@@ -158,7 +248,7 @@ async function initGames(){
     entries.forEach(entry => {
       if(entry.isIntersecting){
         const thumb = entry.target.querySelector(".game-thumb");
-        const slug = entry.target.dataset.title; // keep original capitalization
+        const slug = entry.target.dataset.title;
 
         const exts = ["png","jpg","jpeg","webp"];
         let found = false;
@@ -190,7 +280,7 @@ async function initGames(){
   }, {rootMargin:"150px"});
 
   games.forEach(f => {
-    const slug = f.name.replace(".html",""); // keep capitalization
+    const slug = f.name.replace(".html",""); 
     const card = document.createElement("div");
     card.className = "game-card";
     card.dataset.title = slug;
