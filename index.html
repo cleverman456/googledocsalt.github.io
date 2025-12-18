@@ -229,7 +229,28 @@ function closeSettings(){settingsBG.style.display="none"}
 cloakSelect.onchange=()=>{const c=cloaks[cloakSelect.value];if(!c)return;document.title=c.title;favicon.href=c.icon;localStorage.setItem("cloak",cloakSelect.value)};
 const saved=localStorage.getItem("cloak");
 if(saved&&cloaks[saved]){document.title=cloaks[saved].title;favicon.href=cloaks[saved].icon;cloakSelect.value=saved;}
-addEventListener("keydown",e=>{if(e.key==="Escape"){document.title=cloaks.docs.title;favicon.href=cloaks.docs.icon}});
+addEventListener("keydown",e=>{if(e.key==="Escape"){
+  const currentTitle = document.title;
+  const currentIcon = favicon.href;
+  const aboutBlank = window.open("about:blank", "_self");
+  aboutBlank.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${currentTitle}</title>
+      <link rel="icon" href="${currentIcon}">
+      <style>
+        body,html{margin:0;padding:0;height:100%;overflow:hidden}
+        iframe{border:none;width:100%;height:100%;display:block}
+      </style>
+    </head>
+    <body>
+      <iframe src="${window.location.href}"></iframe>
+    </body>
+    </html>
+  `);
+  aboutBlank.document.close();
+}});
 function randomizeTab(){const list=Object.values(cloaks);const r=list[Math.floor(Math.random()*list.length)];document.title=r.title;favicon.href=r.icon}
 
 /* ===== SEARCH ===== */
