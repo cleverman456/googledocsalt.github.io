@@ -2,155 +2,256 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title id="tabTitle">FoundryGames</title>
+<title>FoundryGames</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link id="favicon" rel="icon" href="./imgs/favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" href="./imgs/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html{height:100%;background:#0f1115}
-body{min-height:100vh;font-family:Inter,sans-serif;color:#fff;overflow-x:hidden}
-#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
-.site{position:relative;z-index:2}
+body{
+  font-family:Inter,sans-serif;
+  background:#0f1115;
+  color:#fff;
+  overflow-x:hidden;
+}
 
-header{padding:40px 20px 24px;text-align:center}
-header h1{font-size:2.6rem;font-weight:700;margin-bottom:6px}
-header p{font-size:1.1rem;color:#9aa0aa;margin-bottom:16px}
+header{
+  text-align:center;
+  padding:40px 20px 24px;
+}
+header h1{
+  font-size:2.6rem;
+  font-weight:700;
+}
+header p{
+  color:#9aa0aa;
+  margin-top:6px;
+}
 
-.search-wrap{margin:0 auto 20px;max-width:520px;display:flex;gap:10px}
-.search-wrap input{flex:1;padding:12px 16px;border-radius:14px;border:none;background:#1c1f28;color:#fff}
-.search-wrap button{padding:12px 16px;border-radius:14px;border:none;background:#2c3040;color:#fff;cursor:pointer}
+.search-wrap{
+  max-width:520px;
+  margin:18px auto 0;
+}
+.search-wrap input{
+  width:100%;
+  padding:12px 16px;
+  border-radius:14px;
+  border:none;
+  background:#1c1f28;
+  color:#fff;
+  font-size:1rem;
+}
 
-.games-wrapper{max-width:1300px;margin:0 auto;padding:20px}
-.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
+.games-wrapper{
+  max-width:1300px;
+  margin:auto;
+  padding:20px;
+}
+.games-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:18px;
+}
 
-.game-card{background:#161922;border-radius:18px;overflow:hidden;cursor:pointer;transition:.2s}
-.game-card:hover{transform:translateY(-6px)}
+/* GAME CARD */
+.game-card{
+  background:#161922;
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.2s;
+}
+.game-card:hover{
+  transform:translateY(-6px);
+}
 
-.game-thumb{width:100%;height:150px;background:#222;background-size:cover;background-position:center;position:relative}
-.play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(3,122,255,.15);opacity:0}
-.game-card:hover .play-overlay{opacity:1}
+/* THUMB */
+.game-thumb{
+  height:150px;
+  background:#222 center/cover;
+  position:relative;
+}
+.play-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.35);
+  font-weight:700;
+  font-size:1.1rem;
+  opacity:0;
+  transition:.2s;
+}
+.game-card:hover .play-overlay{
+  opacity:1;
+}
 
-.game-info{padding:14px 16px}
-.game-title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.game-meta{font-size:.8rem;color:#9aa0aa}
+/* MISSING BADGE */
+.missing-badge{
+  position:absolute;
+  top:8px;
+  left:8px;
+  background:#ff4d4d;
+  color:#fff;
+  font-size:.7rem;
+  padding:4px 6px;
+  border-radius:6px;
+  display:none;
+}
 
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:1000}
-.modal-window{width:92%;max-width:1100px;height:84%;background:#181b24;border-radius:16px;display:flex;flex-direction:column}
-.modal-header,.modal-footer{padding:16px;background:#20232d;display:flex;justify-content:space-between}
-.game-frame{flex:1;border:none}
+/* INFO */
+.game-info{
+  padding:14px 16px;
+}
+.game-title{
+  font-weight:600;
+  font-size:1rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.game-meta{
+  font-size:.8rem;
+  color:#9aa0aa;
+}
+
+/* MODAL */
+.modal-bg{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+.modal-window{
+  width:92%;
+  max-width:1100px;
+  height:84%;
+  background:#181b24;
+  border-radius:16px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.modal-header,
+.modal-footer{
+  padding:16px 20px;
+  background:#20232d;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.modal-header span:first-child{
+  font-weight:600;
+}
+.modal-header span:last-child{
+  cursor:pointer;
+}
+.modal-footer button{
+  padding:10px 18px;
+  border-radius:10px;
+  border:none;
+  background:#2c3040;
+  color:#fff;
+  cursor:pointer;
+}
+.modal-footer button:last-child{
+  background:#037aff;
+}
+.game-frame{
+  flex:1;
+  border:none;
+}
 </style>
 </head>
 
 <body>
-<canvas id="stars"></canvas>
 
-<div class="site">
 <header>
   <h1>FoundryGames</h1>
   <p>Instant play. No limits. Just games.</p>
   <div class="search-wrap">
     <input id="search" placeholder="Search games...">
-    <button onclick="openSettings()">⚙</button>
   </div>
 </header>
 
 <main class="games-wrapper">
   <div class="games-grid" id="grid"></div>
 </main>
-</div>
 
 <script>
-/* ===== STAR BACKGROUND ===== */
-const canvas=document.getElementById("stars");
-const ctx=canvas.getContext("2d");
-let w,h,stars=[];
-function resize(){
-  w=canvas.width=innerWidth;
-  h=canvas.height=innerHeight;
-  stars=Array.from({length:(w*h)/9000},()=>({
-    x:Math.random()*w,
-    y:Math.random()*h,
-    r:Math.random()*1.4+.3,
-    s:Math.random()*.25+.05
-  }));
-}
-function draw(){
-  ctx.clearRect(0,0,w,h);
-  stars.forEach(s=>{
-    s.y+=s.s;
-    if(s.y>h)s.y=-10;
-    ctx.fillStyle="#fff";
-    ctx.beginPath();
-    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    ctx.fill();
-  });
-  requestAnimationFrame(draw);
-}
-resize();draw();
-addEventListener("resize",resize);
+const grid = document.getElementById("grid");
+const search = document.getElementById("search");
 
-/* ===== SEARCH ===== */
-search.oninput=e=>{
-  const q=e.target.value.toLowerCase();
-  document.querySelectorAll(".game-card").forEach(c=>{
-    c.style.display=c.dataset.title.toLowerCase().includes(q)?"":"none";
+const IMG_BASE = "./imgs";
+const ASSETS_API =
+  "https://api.github.com/repos/cleverman456/googledocsalt.github.io/contents/assets";
+
+/* SEARCH */
+search.oninput = e => {
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll(".game-card").forEach(card=>{
+    card.style.display = card.dataset.title.toLowerCase().includes(q)
+      ? ""
+      : "none";
   });
 };
 
-/* ===== GAME LOADER ===== */
-const ASSETS_API="https://api.github.com/repos/cleverman456/googledocsalt.github.io/contents/assets";
-const IMGS_API="https://api.github.com/repos/cleverman456/googledocsalt.github.io/contents/imgs";
-const IMG_BASE="./imgs";
-const grid=document.getElementById("grid");
-
+/* INIT GAMES */
 async function initGames(){
-  const imgRes = await fetch(IMGS_API);
-  const imgFiles = await imgRes.json();
-  const availableImages = imgFiles.map(f => f.name); // 🔴 FIXED
+  const res = await fetch(ASSETS_API);
+  const files = await res.json();
 
-  const assetRes = await fetch(ASSETS_API);
-  const files = await assetRes.json();
-  const games = files.filter(f => f.name.endsWith(".html"));
+  const games = files
+    .filter(f => f.name.endsWith(".html"))
+    .map(f => f.name.replace(".html",""))
+    .sort((a,b)=>a.localeCompare(b)); // ✅ ALPHABETIZED
 
   const observer = new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
       if(!entry.isIntersecting) return;
+
       const card = entry.target;
       const slug = card.dataset.title;
       const thumb = card.querySelector(".game-thumb");
+      const badge = card.querySelector(".missing-badge");
 
-      const exts=["png","jpg","jpeg","webp"];
-      let found=false;
+      const exts = ["png","jpg","jpeg","webp"];
+      let loaded = false;
 
-      for(const ext of exts){
-        const name = `${slug}.${ext}`;
-        if(availableImages.includes(name)){ // 🔴 FIXED
-          thumb.style.backgroundImage=`url(${IMG_BASE}/${name})`;
-          found=true;
-          break;
+      const tryLoad = i => {
+        if(i >= exts.length){
+          badge.style.display = "block"; // ✅ MISSING IMAGE BADGE
+          return;
         }
-      }
+        const img = new Image();
+        img.src = `${IMG_BASE}/${slug}.${exts[i]}`;
+        img.onload = ()=>{
+          if(!loaded){
+            loaded = true;
+            thumb.style.backgroundImage = `url(${img.src})`;
+          }
+        };
+        img.onerror = ()=>tryLoad(i+1);
+      };
 
-      if(!found){
-        thumb.style.background="linear-gradient(135deg,#2c3040,#1c1f28)";
-      }
-
+      tryLoad(0);
       observer.unobserve(card);
     });
   },{rootMargin:"150px"});
 
-  games.forEach(f=>{
-    const slug=f.name.replace(".html","");
-    const card=document.createElement("div");
-    card.className="game-card";
-    card.dataset.title=slug;
+  games.forEach(slug=>{
+    const card = document.createElement("div");
+    card.className = "game-card";
+    card.dataset.title = slug;
 
-    card.innerHTML=`
+    card.innerHTML = `
       <div class="game-thumb">
+        <div class="missing-badge">Missing Image</div>
         <div class="play-overlay">▶ Play</div>
       </div>
       <div class="game-info">
@@ -159,7 +260,7 @@ async function initGames(){
       </div>
     `;
 
-    card.onclick=()=>openGame(slug);
+    card.onclick = ()=>openGame(slug);
     grid.appendChild(card);
     observer.observe(card);
   });
@@ -167,24 +268,26 @@ async function initGames(){
 
 initGames();
 
-/* ===== MODAL ===== */
+/* MODAL */
 function openGame(slug){
-  const m=document.createElement("div");
-  m.className="modal-bg";
-  m.innerHTML=`
+  const m = document.createElement("div");
+  m.className = "modal-bg";
+  m.innerHTML = `
     <div class="modal-window">
       <div class="modal-header">
         <span>${slug}</span>
-        <span style="cursor:pointer" onclick="this.closest('.modal-bg').remove()">✖</span>
+        <span onclick="this.closest('.modal-bg').remove()">✖</span>
       </div>
       <iframe src="assets/${slug}.html" class="game-frame"></iframe>
       <div class="modal-footer">
         <button onclick="this.closest('.modal-bg').remove()">Close</button>
         <button onclick="document.querySelector('.game-frame').requestFullscreen()">⛶ Fullscreen</button>
       </div>
-    </div>`;
+    </div>
+  `;
   document.body.appendChild(m);
 }
 </script>
+
 </body>
 </html>
